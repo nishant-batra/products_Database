@@ -1,61 +1,9 @@
 import React from 'react';
 import CartItem from './CartItem'
-class Cart extends React.Component {
-    constructor()
-    {
-      super();
-      this.state={
-          products:[
-        {title: "Phone",
-        price: 999,
-        qty:3,
-        key:1,
-          },
-          {title: "Watch",
-        price: 99,
-        qty:8,
-        key:2,
-          },
-          {title: "Laptop",
-        price: 9999,
-        qty:1,
-        key:3,
-          }
-          ]
-      };
-    } 
-   handleIncrease=(product)=>{
+const Cart =(props)=> {
+   
 
-const{products}=this.state;
-let index=products.indexOf(product);
-products[index].qty++;
-this.setState ({
-products:products,
-});
-   }
-   handleDecrease=(product)=>{
-     const{products}=this.state;
-     let index=products.indexOf(product);
-     if(products[index].qty>0)
-     products[index].qty--;
-     if(products[index].qty===0){
-       this.handleDelete(products[index].key);
-       return;
-     }
-     this.setState({
-       products:products,
-     });
-   }
-   handleDelete=(key)=>{
-     const {products}=this.state;
-     const items = products.filter((item)=>{return item.key!==key});
-
-     this.setState({
-       products: items,
-     });
-   }
-  render () {
-    const {products}=this.state;
+    const {products}=props;
   return (
        
       <div className="cart">
@@ -63,11 +11,11 @@ products:products,
      {
 return<CartItem product={product}
  key={product.key}
-   onIncQty={this.handleIncrease}
+   onIncQty={props.onIncQty}
    onDecQty={
-   this.handleDecrease
+   props.onDecQty
    }
-   onDelete={this.handleDelete}
+   onDelete={props.onDelete}
    >
  </CartItem>
      }
@@ -76,7 +24,7 @@ return<CartItem product={product}
    
       </div>
   );
-}
+
 }
 
 
