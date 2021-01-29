@@ -9,6 +9,7 @@ body {
 .cart-item {
   display: inline-flex;
   margin: 20px 10px;
+ 
   
 }
 .cart-item .right-block {
@@ -28,7 +29,12 @@ body {
 .cart{
   display:flex;
   flex-direction:column;
-  height:100vh;
+  height:auto;
 flex:1;
 
+}
+.cartTotal{
+  position: relative;
+
+  font-size:40px;
 }
