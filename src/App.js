@@ -11,6 +11,7 @@ class App extends React.Component {
         ],
         loading: true,
     };
+    this.fb=firebase.firestore();
   }
   componentDidMount()
   {
@@ -29,7 +30,7 @@ class App extends React.Component {
     //   });
     // });
     
-    firebase.firestore().collection('products')
+    this.fb.collection('products')
     .onSnapshot((snapshot)=>{
     const products= snapshot.docs.map((doc)=>{
       let data=doc.data();
@@ -48,23 +49,37 @@ class App extends React.Component {
 
 const{products}=this.state;
 let index=products.indexOf(product);
-products[index].qty++;
-this.setState ({
-products:products,
-});
+// products[index].qty++;
+// this.setState ({
+// products:products,
+//});
+const docref=this.fb.collection('products').doc(products[index].key);
+docref.update({
+  qty:products[index].qty+1,
+}).then().catch((error)=>console.log(error));
  }
  handleDecrease=(product)=>{
    const{products}=this.state;
    let index=products.indexOf(product);
-   if(products[index].qty>0)
-   products[index].qty--;
-   if(products[index].qty===0){
-     this.handleDelete(products[index].key);
-     return;
-   }
-   this.setState({
-     products:products,
-   });
+  //  if(products[index].qty>0)
+  //  products[index].qty--;
+  //  if(products[index].qty===0){
+  //    this.handleDelete(products[index].key);
+  //    return;
+  //  }
+  //  this.setState({
+  //    products:products,
+  //  });
+  if(products[index].qty>0)
+  {
+    const docref= this.fb.collection('products').doc(products[index].key);
+    docref.update({
+      qty:products[index].qty-1,
+    }).then().catch((error)=>{
+      console.log(error);
+    });
+  }
+  
  }
  handleDelete=(key)=>{
    const {products}=this.state;
@@ -94,6 +109,14 @@ return count;
    }
    return cartTotal;
  }
+ addProducts=()=>{
+this.fb.collection('products').add({
+  img:"https://images.livemint.com/img/2020/09/25/600x338/WD10N641R2X-TL_010_Dynamic1_Inox-845x563_1601035914183_1601035921794.png",
+  qty:1,
+  price:7899,
+  title:"Washing Machine",
+}).then(()=>{console.log("added")}).catch((error)=>{console.log(error)});
+ }
   render()
   {
     const {products,loading}=this.state;
@@ -108,6 +131,7 @@ return count;
       }
       onDelete={this.handleDelete}
      />
+     {/* <button type="button" onClick={this.addProducts}> Add Products</button> */}
      {loading && <h1>Loading Products...</h1>}
      <div className="cartTotal">TOTAL:  {this.getCartTotal()}</div>
     </div>
