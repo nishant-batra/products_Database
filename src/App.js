@@ -88,6 +88,8 @@ docref.update({
    this.setState({
      products: items,
    });
+   const docref= this.fb.collection('products').doc(key);
+   docref.delete().then().catch();
  }
  getCartCount=()=>{
 const {products}=this.state;
@@ -111,7 +113,7 @@ return count;
  }
  addProducts=()=>{
 this.fb.collection('products').add({
-  img:"https://images.livemint.com/img/2020/09/25/600x338/WD10N641R2X-TL_010_Dynamic1_Inox-845x563_1601035914183_1601035921794.png",
+  src:"https://images.livemint.com/img/2020/09/25/600x338/WD10N641R2X-TL_010_Dynamic1_Inox-845x563_1601035914183_1601035921794.png",
   qty:1,
   price:7899,
   title:"Washing Machine",
