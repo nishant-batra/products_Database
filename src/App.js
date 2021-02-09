@@ -12,6 +12,10 @@ class App extends React.Component {
         loading: true,
     };
     this.fb=firebase.firestore();
+    this.titleref=new React.createRef();
+    this.qtyref=new React.createRef();
+    this.srcref=new React.createRef();
+    this.priceref=new React.createRef();
   }
   componentDidMount()
   {
@@ -112,13 +116,40 @@ return count;
    return cartTotal;
  }
  addProducts=()=>{
-this.fb.collection('products').add({
-  src:"https://images.livemint.com/img/2020/09/25/600x338/WD10N641R2X-TL_010_Dynamic1_Inox-845x563_1601035914183_1601035921794.png",
-  qty:1,
-  price:7899,
-  title:"Washing Machine",
-}).then(()=>{console.log("added")}).catch((error)=>{console.log(error)});
+   if(this.titleref.value==="")
+   {
+   window.alert("Please fill the title field");
+  return; 
+  }
+  if(this.srcref.value==="")
+  {
+  window.alert("Please fill the src field");
+ return; 
  }
+ if(this.qtyref.value==="")
+ {
+ window.alert("Please fill the qty field");
+return; 
+}
+if(this.priceref.value==="")
+{
+window.alert("Please fill the price field");
+return; 
+}
+this.fb.collection('products').add({
+  src:this.srcref.value,
+  qty:this.qtyref.value,
+  price:this.priceref.value,
+  title:this.titleref.value,
+}).then(()=>{console.log("added")}).catch((error)=>{console.log(error)});
+//console.log(this.titleref.value);
+this.srcref.value="";
+this.qtyref.value="";
+this.titleref.value="";
+this.priceref.value="";
+
+ }
+ 
   render()
   {
     const {products,loading}=this.state;
@@ -136,6 +167,38 @@ this.fb.collection('products').add({
      {/* <button type="button" onClick={this.addProducts}> Add Products</button> */}
      {loading && <h1>Loading Products...</h1>}
      <div className="cartTotal">TOTAL:  {this.getCartTotal()}</div>
+     <form className="form-div"> 
+       <label for="title">Title: </label>
+       <input id="title" 
+       name="title"
+        type="text"
+        ref={(val)=>this.titleref=val}
+        required></input>
+       <label for="src"> Image Source: </label>
+       <input id="src" name="src" type="url"
+         ref={(val)=>{
+          this.srcref=val;
+        }}
+        required></input>
+       <label for="qty" >Qty: </label>
+       <input id="qty" name="qty" type="number"
+       ref={(val)=>{
+        this.qtyref=val;
+      }
+
+      }
+      required/>
+       <label for="price" >Price: </label>
+       <input id="price" name="price" type="number"
+       ref={(val)=>{
+        this.priceref=val;
+      }
+
+      }
+      required></input>
+       <button type="button" onClick={this.addProducts}> Add Products</button>
+     </form>
+    
     </div>
   );
 }

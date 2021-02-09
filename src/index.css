@@ -31,10 +31,23 @@ body {
   flex-direction:column;
   height:auto;
 flex:1;
+flex-wrap: wrap;
+width:78vw;
+overflow-y: auto;
 
 }
 .cartTotal{
   position: relative;
 
   font-size:40px;
+}
+.form-div{
+  
+  display:flex;
+  flex-direction:column;
+  width:400px;
+  position:relative;
+  left:79vw;
+  top:-500px;
+
 }
