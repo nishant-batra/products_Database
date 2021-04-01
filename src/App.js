@@ -10,13 +10,15 @@ class App extends React.Component {
       loading: true,
     };
     this.availableProducts = true;
-    this.showActions = true;
+    //  this.showActions = true;
     this.fb = firebase.firestore();
     this.titleref = new React.createRef();
     this.qtyref = new React.createRef();
     this.srcref = new React.createRef();
     this.priceref = new React.createRef();
     this.catref = new React.createRef();
+    this.unsubscribe = null;
+    this.category = null;
   }
   componentDidMount() {
     // firebase.firestore().collection('products')
@@ -33,7 +35,7 @@ class App extends React.Component {
     //   });
     // });
 
-    this.fb.collection("products").onSnapshot((snapshot) => {
+    this.unsubscribe = this.fb.collection("products").onSnapshot((snapshot) => {
       const products = snapshot.docs.map((doc) => {
         let data = doc.data();
         data["key"] = doc.id;
@@ -85,6 +87,22 @@ class App extends React.Component {
         });
     }
   };
+  handleEditPrice = (product, price) => {
+    const { products } = this.state;
+    let index = products.indexOf(product);
+    if (price > 0) {
+      const docref = this.fb.collection("products").doc(products[index].key);
+      docref
+        .update({
+          price: parseInt(price),
+        })
+        .then()
+        .catch((error) => {
+          console.log(error);
+        });
+    }
+  };
+
   handleDelete = (key) => {
     const { products } = this.state;
     const items = products.filter((item) => {
@@ -153,13 +171,11 @@ class App extends React.Component {
     this.priceref.value = "";
   };
   showAvailable = () => {
-    firebase
-      .firestore()
+    this.unsubscribe();
+    this.unsubscribe = this.fb
       .collection("products")
       .where("qty", ">", 0)
-      .get()
-      .then((snapshot) => {
-        // console.log(snapshot);
+      .onSnapshot((snapshot) => {
         const products = snapshot.docs.map((doc) => {
           let data = doc.data();
           data["key"] = doc.id;
@@ -171,36 +187,31 @@ class App extends React.Component {
         });
       });
     this.availableProducts = false;
-    this.showActions = false;
+    // this.showActions = false;
   };
   showAll = () => {
-    firebase
-      .firestore()
-      .collection("products")
-      .get()
-      .then((snapshot) => {
-        // console.log(snapshot);
-        const products = snapshot.docs.map((doc) => {
-          let data = doc.data();
-          data["key"] = doc.id;
-          return data;
-        });
-        this.setState({
-          products: products,
-          loading: false,
-        });
+    this.unsubscribe();
+    this.unsubscribe = this.fb.collection("products").onSnapshot((snapshot) => {
+      const products = snapshot.docs.map((doc) => {
+        let data = doc.data();
+        data["key"] = doc.id;
+        return data;
       });
+      this.setState({
+        products: products,
+        loading: false,
+      });
+    });
+
     this.availableProducts = true;
-    this.showActions = true;
+    //this.showActions = true;
   };
   sortByPrice = () => {
-    firebase
-      .firestore()
+    this.unsubscribe();
+    this.unsubscribe = this.fb
       .collection("products")
       .orderBy("price")
-      .get()
-      .then((snapshot) => {
-        // console.log(snapshot);
+      .onSnapshot((snapshot) => {
         const products = snapshot.docs.map((doc) => {
           let data = doc.data();
           data["key"] = doc.id;
@@ -211,8 +222,33 @@ class App extends React.Component {
           loading: false,
         });
       });
+
     // this.availableProducts = true;
     // this.showActions = true;
+  };
+  handleCatChange = (e) => {
+    this.category = e.target.value;
+  };
+  getCategory = () => {
+    if (!this.category) {
+      window.alert("Please select a category to filter");
+      return;
+    }
+    this.unsubscribe();
+    this.unsubscribe = this.fb
+      .collection("products")
+      .where("category", "==", this.category)
+      .onSnapshot((snapshot) => {
+        const products = snapshot.docs.map((doc) => {
+          let data = doc.data();
+          data["key"] = doc.id;
+          return data;
+        });
+        this.setState({
+          products: products,
+          loading: false,
+        });
+      });
   };
 
   render() {
@@ -225,12 +261,12 @@ class App extends React.Component {
           onIncQty={this.handleIncrease}
           onDecQty={this.handleDecrease}
           onDelete={this.handleDelete}
-          availableProducts={this.showActions}
+          onChangePrice={this.handleEditPrice}
         />
         {/* <button type="button" onClick={this.addProducts}> Add Products</button> */}
         {loading && <h1>Loading Products...</h1>}
         <div className="cartTotal">TOTAL: {this.getCartTotal()}</div>
-        <form className="filter">
+        <form className="filter" onChange={this.handleCatChange}>
           Filter by Categories
           <br />
           <input type="radio" name="categories" value="mobile" />
@@ -245,7 +281,9 @@ class App extends React.Component {
           <input type="radio" name="categories" value="watch" />
           Watch
           <br />
-          <button type="button">Filter</button>
+          <button type="button" onClick={this.getCategory}>
+            Filter
+          </button>
           <button type="button" onClick={this.sortByPrice}>
             Sort by Price
           </button>

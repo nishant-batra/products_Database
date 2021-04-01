@@ -43,7 +43,7 @@ body {
   flex-direction: column;
   width: 400px;
   position: absolute;
-  left: 80%;
+  left: 79%;
   top: 400px;
 }
 .form-div button {
@@ -59,4 +59,19 @@ body {
   display: block;
   margin-top: 10px;
   border: none;
+}
+
+.edit-icon img {
+  height: 10px;
+  position: relative;
+  top: -22px;
+  left: 80px;
+}
+.edit-icon :hover {
+  cursor: pointer;
+}
+
+.qty {
+  position: relative;
+  top: -20px;
 }

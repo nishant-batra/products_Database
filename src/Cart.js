@@ -12,7 +12,7 @@ const Cart = (props) => {
             onIncQty={props.onIncQty}
             onDecQty={props.onDecQty}
             onDelete={props.onDelete}
-            availableProducts={props.availableProducts}
+            onEditPrice={props.onChangePrice}
           ></CartItem>
         );
       })}
