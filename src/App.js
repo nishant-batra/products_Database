@@ -1,6 +1,7 @@
 import React from "react";
 import Cart from "./Cart";
 import Navbar from "./Navbar";
+import NewProduct from "./NewProduct";
 import firebase from "firebase";
 class App extends React.Component {
   constructor() {
@@ -12,11 +13,7 @@ class App extends React.Component {
     this.availableProducts = true;
     //  this.showActions = true;
     this.fb = firebase.firestore();
-    this.titleref = new React.createRef();
-    this.qtyref = new React.createRef();
-    this.srcref = new React.createRef();
-    this.priceref = new React.createRef();
-    this.catref = new React.createRef();
+
     this.unsubscribe = null;
     this.category = null;
   }
@@ -132,31 +129,31 @@ class App extends React.Component {
     }
     return cartTotal;
   };
-  addProducts = () => {
-    if (this.titleref.value === "") {
+  addProducts = (titleref, qtyref, srcref, priceref, catref) => {
+    if (titleref === "") {
       window.alert("Please fill the title field");
       return;
     }
-    if (this.srcref.value === "") {
+    if (srcref === "") {
       window.alert("Please fill the src field");
       return;
     }
-    if (this.qtyref.value === "") {
+    if (qtyref === "") {
       window.alert("Please fill the qty field");
       return;
     }
-    if (this.priceref.value === "") {
+    if (priceref === "") {
       window.alert("Please fill the price field");
       return;
     }
     this.fb
       .collection("products")
       .add({
-        src: this.srcref.value,
-        qty: parseInt(this.qtyref.value),
-        price: parseInt(this.priceref.value),
-        title: this.titleref.value,
-        category: this.catref.value,
+        src: srcref,
+        qty: parseInt(qtyref),
+        price: parseInt(priceref),
+        title: titleref,
+        category: catref,
       })
       .then(() => {
         console.log("added");
@@ -165,10 +162,6 @@ class App extends React.Component {
         console.log(error);
       });
     //console.log(this.titleref.value);
-    this.srcref.value = "";
-    this.qtyref.value = "";
-    this.titleref.value = "";
-    this.priceref.value = "";
   };
   showAvailable = () => {
     this.unsubscribe();
@@ -298,57 +291,7 @@ class App extends React.Component {
           )}
         </form>
 
-        <form className="form-div">
-          <label for="title">Title: </label>
-          <input
-            id="title"
-            name="title"
-            type="text"
-            ref={(val) => (this.titleref = val)}
-            required
-          ></input>
-          <label for="src"> Image Source: </label>
-          <input
-            id="src"
-            name="src"
-            type="url"
-            ref={(val) => {
-              this.srcref = val;
-            }}
-            required
-          ></input>
-          <label for="qty">Qty: </label>
-          <input
-            id="qty"
-            name="qty"
-            type="number"
-            ref={(val) => {
-              this.qtyref = val;
-            }}
-            required
-          />
-          <label for="price">Price: </label>
-          <input
-            id="price"
-            name="price"
-            type="number"
-            ref={(val) => {
-              this.priceref = val;
-            }}
-            required
-          ></input>
-          <label for="cat">Category: </label>
-          <input
-            id="cat"
-            name="cat"
-            type="text"
-            ref={(val) => (this.catref = val)}
-            required
-          ></input>
-          <button type="button" onClick={this.addProducts}>
-            Add Products
-          </button>
-        </form>
+        <NewProduct addProducts={this.addProducts} />
       </div>
     );
   }

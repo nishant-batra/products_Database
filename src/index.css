@@ -71,7 +71,11 @@ body {
   cursor: pointer;
 }
 
-.qty {
+/* .qty {
   position: relative;
   top: -20px;
+} */
+button {
+  margin: 10px;
+  border: none;
 }
